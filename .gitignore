@@ -1,0 +1,38 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Bí mật. .env.sample và .env.example vẫn được đưa lên repo.
+.env
+*.env
+!.env.sample
+!.env.example
+
+# Danh sách sinh viên, tài khoản, mật khẩu
+*.xlsx
+!samples/*.sample.xlsx
+
+# Nhật ký chạy và file dò thử
+*.log
+**/_probe*
+**/_chrome*
+
+# Ảnh đại diện tạm do register.py tự tạo khi thiếu file
+register-dhqg/avatar-placeholder.jpg
+
+# Dữ liệu đầu vào và kết quả chạy — giữ trên máy, không đưa lên GitHub
+Minh chứng ĐHQG/
+crawl-dhqg/kết quả/
+crawl-dhqg/nhật ký/
+crawl-profile-image-mybk/Ảnh thẻ/
+highlighter/TNTT/
+highlighter/highlighted/
+highlighter/.ocr_cache/
+**/input/**
+**/output/**
+
+# Hệ điều hành
+Thumbs.db
+Desktop.ini
+.DS_Store
