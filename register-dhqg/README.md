@@ -1,61 +1,79 @@
-# Tạo tài khoản SV5T ĐHQG-HCM
+# Tạo tài khoản và ghi hồ sơ SV5T ĐHQG
 
-## Mô tả
-- Tool này tạo tài khoản hàng loạt cho Sinh viên 5 tốt trên hệ thống web của ĐHQG
-- Đối với các tài khoản đã tồn tại, nó sẽ tự bỏ qua mà không bị lỗi, nhưng sẽ có log lại
+Tạo tài khoản hàng loạt trên https://youth.vnuhcm.edu.vn/, ghi hồ sơ `nominee.info`, rồi đăng nhập lại để đối chiếu với Excel. Tài khoản đã tồn tại được ghi `skipped` và vẫn được cập nhật hồ sơ.
 
-## Web
-Chính: https://youth.vnuhcm.edu.vn/
-Trang đăng ký tài khoản: https://youth.vnuhcm.edu.vn/web/signup?redirect=%2Fodoo%3F
+Đăng ký đi qua Chrome thật vì trang dùng reCAPTCHA v3. Tool không tự tạo token và không gọi dịch vụ giải captcha. Chi tiết nằm ở [reCAPCHA.md](reCAPCHA.md). Đăng nhập và ghi hồ sơ đi bằng form cùng JSON-RPC, không qua reCAPTCHA.
 
-## Đăng ký
-Khi đăng ký cần nhập:
-Your Email
-Your Name
-Password
-Confirm Password
+## Chuẩn bị
 
-và nhấn Sign Up là xong
+Cần Google Chrome. Đóng hết cửa sổ Chrome trước khi chạy, trừ khi dùng `-FreshChrome`.
 
-## Nhập thông tin
-Khi vừa đăng ký xong sẽ được redirect về trang nhập thông tin, hoặc nếu không thì tự chuyển về trang đó.
+Đặt `register-dhqg/data.xlsx`. Dòng tiêu đề cần đúng các tên sau. File mẫu: [`samples/ho-so.sample.xlsx`](../samples/ho-so.sample.xlsx).
 
-https://youth.vnuhcm.edu.vn/odoo/bat-dau/action-165/<mã hồ sơ>
+| Cột | Ghi chú |
+|-----|---------|
+| Tài khoản | Email đăng ký |
+| Mật khẩu | |
+| Họ tên | |
+| MSSV hoặc Mã số sinh viên/cán bộ | |
+| Trường | Tên đơn vị trên web, khớp chính xác |
+| Khoa/Phòng/Ban | |
+| Số điện thoại | 9 hoặc 10 số. Ngắn hơn thì thêm 0 cho đủ 10 |
+| Nhóm đối tượng | `Sinh viên`, `Giảng viên, trợ giảng, nghiên cứu viên`, `Cán bộ làm công tác quản lý`, `Giáo viên trẻ THPT Năng khiếu` |
+| CMND/CCCD | 11 hoặc 12 số. Ngắn hơn thì thêm 0 cho đủ 12 |
+| Giới tính | `Nam` hoặc `Nữ` |
+| Dân tộc | `1` được hiểu là `Kinh (Việt)` |
+| Tôn giáo | `1` được hiểu là `Không` |
+| Trình độ học vấn | `Sinh viên`, `Cử nhân/Kỹ sư`, `Thạc sĩ`, `Tiến sĩ` |
+| Ngày sinh | `dd/mm/yyyy`, hoặc ô ngày của Excel |
+| Địa chỉ thường trú | |
+| Địa chỉ tạm trú trùng địa chỉ thường trú? | `Có` / `Không`, hoặc `1` / `0` |
+| Địa chỉ tạm trú | Bắt buộc khi không trùng địa chỉ thường trú |
 
-Nhập toàn bộ thông tin với các label tương ứng với header trong file data.xlsx.
+Ảnh đại diện phải từ 1 MB. Nếu chưa có `avatar-placeholder.jpg`, tool tự tạo một ảnh JPEG đủ dung lượng bằng Pillow. File này không được đưa lên GitHub.
 
-Lưu ý: Trong file data.xlsx cột cần lưu ý format:
-1. Số điện thoại nhập 10 chữ số (tính các số 0 ở đầu cho đủ 10 ký tự);
-2. CMND/CCCD nhập 12 chữ số (fill thêm số 0 ở đầu cho đủ 10 ký tự)
-
-## Chạy tool
-
-Cần Google Chrome. Ở thư mục gốc của repo, bật `.venv` rồi cài dependency:
-
-```text
-.\venv.ps1
-pip install -r requirements.txt
-```
-
-Save `data.xlsx`, đóng hết cửa sổ Chrome, rồi ở thư mục gốc chạy:
+## Chạy
 
 ```text
 .\register-dhqg.ps1
-```
-
-Một lệnh này tự tạo `.venv`, cài thư viện, sao profile Chrome, đăng ký từng tài khoản, ghi hồ sơ (kèm ảnh đại diện >= 1 MB), rồi đối chiếu lại với Excel. Tài khoản đã có sẽ được cập nhật hồ sơ. Kết quả nằm ở `register-dhqg\register.log` và `register-dhqg\validate.log`.
-
-Luân phiên nhiều profile Google (giảm reCAPTCHA): chạy `register-dhqg\prepare-chrome-profiles.ps1`, đăng nhập từng profile Chrome một lần, rồi:
-
-```text
-.\register-dhqg.ps1 -ChromeProfiles "$env:LOCALAPPDATA\sv5t-chrome-profiles" -Pause 15
-```
-
-Chi tiết reCAPTCHA: `register-dhqg\reCAPCHA.md`.
-
-```text
 .\register-dhqg.ps1 -Limit 1
 .\register-dhqg.ps1 -ValidateOnly
+.\register-dhqg.ps1 -SkipValidate
+.\register-dhqg.ps1 -FreshChrome
 ```
 
-Một cửa sổ Chrome hiện trong lúc đăng ký. `register.log` ghi `created`, `skipped`, `invalid_data`, `signup_error`, `captcha_error`, `profile_error`. `validate.log` ghi `ok`, `missing_account`, `missing_profile`, `mismatch`.
+Mặc định script sao profile Chrome hàng ngày, nghỉ 15 giây giữa hai lần đăng ký, rồi đối chiếu toàn bộ Excel.
+
+Khi tạo nhiều tài khoản, chuẩn bị vài profile và đăng nhập Google trên từng profile một lần:
+
+```text
+.\register-dhqg\prepare-chrome-profiles.ps1 -Count 3
+.\register-dhqg.ps1 -ChromeProfiles "$env:LOCALAPPDATA\sv5t-chrome-profiles" -Pause 35 -BatchSize 1 -CaptchaRetries 5 -RefreshChromeProfile
+```
+
+Gọi Python khi cần cờ không có trên script PowerShell:
+
+```text
+.\.venv\Scripts\python.exe register-dhqg\register.py --data register-dhqg\data.xlsx --limit 1
+.\.venv\Scripts\python.exe register-dhqg\register.py --validate
+.\.venv\Scripts\python.exe register-dhqg\register.py --fill-existing
+```
+
+| Tham số | Ý nghĩa |
+|---------|---------|
+| `--use-chrome-profile` | Dùng bản sao profile Chrome. Script PowerShell bật cờ này trừ khi có `-FreshChrome` |
+| `--chrome-profiles` | Thư mục chứa nhiều profile, mỗi thư mục con một tài khoản Google |
+| `--pause` | Số giây nghỉ giữa hai lần đăng ký |
+| `--batch-size` | Số tài khoản trên một profile trước khi đổi profile. Mặc định 7 |
+| `--captcha-retries` | Số lần thử lại khi gặp reCAPTCHA. Mặc định 5 |
+| `--refresh-chrome-profile` | Sao lại cookie từ Chrome hàng ngày |
+| `--fill-existing` | Đăng nhập tài khoản đã có và ghi lại hồ sơ, không mở Chrome |
+| `--validate` | Chỉ đối chiếu, không đăng ký |
+| `--status` | Chỉ xử lý email có trạng thái này ở cuối `validate.log` |
+| `--workers` | Số luồng đối chiếu |
+
+## Kết quả
+
+`register.log`: `created`, `skipped`, `invalid_data`, `signup_error`, `captcha_error`, `profile_error`.
+
+`validate.log`: `ok`, `missing_account`, `missing_profile`, `mismatch`.

@@ -1,81 +1,46 @@
-# Tải ảnh thẻ sinh viên từ myBk HCMUT
+# Tải ảnh thẻ từ myBk
 
-## Mô tả
+Đọc MSSV trong `data.xlsx`, đăng nhập CAS HCMUT bằng tài khoản cán bộ, rồi tải ảnh thẻ 4×6 về `Ảnh thẻ/`. Chỉ dùng HTTP, không mở Chrome.
 
-Tool đọc danh sách MSSV trong `data.xlsx`, đăng nhập myBk bằng tài khoản cán bộ (CAS HCMUT), gọi API ảnh thẻ 4×6 và lưu file vào folder `Ảnh thẻ` theo cột **Tên ảnh**.
+API: `GET /api/public/media/hinh-the-4x6/{MSSV}/original/v1` trên myBk.
 
-Không cần mở Chrome hay Playwright — chỉ HTTP (đăng nhập CAS + REST API).
+## Chuẩn bị
 
-## Web
-
-- Trang quản lý (tham khảo): [Danh sách sinh viên](https://mybk.hcmut.edu.vn/app/he-thong-quan-ly-hoc-vu/quan-ly-sinh-vien/danh-sach-sinh-vien)
-- API ảnh (bản gốc): `GET /api/public/media/hinh-the-4x6/{MSSV}/original/v1`
-
-Tài khoản trong `.env` cần quyền tra cứu sinh viên (giống khi bạn filter MSSV và mở **Xem thông tin và hồ sơ** trên web).
-
-## Cấu hình
-
-Tạo file `crawl-profile-image-mybk/.env`:
+1. Copy `.env.sample` thành `.env` trong thư mục này và điền tài khoản có quyền xem hồ sơ sinh viên:
 
 ```env
-ACCOUNT=ten_dang_nhap_hcmut
+ACCOUNT=ten_dang_nhap
 PASSWORD=mat_khau
 ```
 
-## File `data.xlsx`
+2. Đặt `data.xlsx` cùng thư mục. Dòng 1 là tiêu đề. Tool đọc theo vị trí cột, không theo tên:
 
-Sheet mặc định, dòng 1 là header. Tool dùng các cột:
+| Cột | Nội dung |
+|-----|----------|
+| B | MSSV |
+| E | Họ tên, dùng khi chưa có tên file |
+| F | Tên file đích, không bắt buộc. Thiếu thì tool đặt `{MSSV}_Ảnh thẻ_{Họ tên}.jpg` |
 
-| Cột | Tên (gợi ý) | Ghi chú |
-|-----|-------------|---------|
-| B | MSSV | Số mã sinh viên |
-| E | Họ tên | Chỉ dùng khi thiếu tên file |
-| F | Tên ảnh | Tên file đích (không bắt buộc có `.jpg`; tool tự thêm) |
+File mẫu danh sách: [`samples/danh-sach.sample.xlsx`](../samples/danh-sach.sample.xlsx). File đó chưa có cột F, nên tên ảnh sẽ được ghép từ MSSV và họ tên.
 
-Ví dụ tên ảnh: `2410712_Ảnh thẻ_Nguyễn Tiến Đạt` → file `2410712_Ảnh thẻ_Nguyễn Tiến Đạt.jpg` trong `Ảnh thẻ/`.
+## Chạy
 
-## Chạy tool
-
-Ở **thư mục gốc repo** (cùng cách với `register-dhqg`):
+Ở thư mục gốc repo:
 
 ```text
 .\crawl-profile-image-mybk.ps1
-```
-
-Script tự tạo `.venv` (nếu chưa có), cài `requirements.txt`, rồi chạy `crawl-profile-image-mybk\crawl.py`.
-
-Hoặc gọi trực tiếp:
-
-```text
-.\.venv\Scripts\python.exe crawl-profile-image-mybk\crawl.py
-```
-
-### Tuỳ chọn
-
-```text
 .\crawl-profile-image-mybk.ps1 -Limit 5
 .\crawl-profile-image-mybk.ps1 -SkipExisting
 ```
 
-| Tham số | Ý nghĩa |
-|---------|---------|
-| `-Limit N` | Chỉ xử lý N dòng đầu (0 = tất cả) |
-| `-SkipExisting` | Bỏ qua nếu file trong `Ảnh thẻ/` đã tồn tại và không rỗng |
+Hoặc:
 
-Tương đương Python: `--limit 5`, `--skip-existing`.
+```text
+.\.venv\Scripts\python.exe crawl-profile-image-mybk\crawl.py --limit 5 --skip-existing
+```
 
 ## Kết quả
 
-- Ảnh: `crawl-profile-image-mybk\Ảnh thẻ\*.jpg`
-- Log: `crawl-profile-image-mybk\crawl.log`
+Ảnh nằm trong `crawl-profile-image-mybk/Ảnh thẻ/`. Nhật ký `crawl.log` ghi `ok`, `skip`, `error`, `summary`.
 
-Trạng thái trong log:
-
-| Status | Ý nghĩa |
-|--------|---------|
-| `ok` | Tải và ghi file thành công |
-| `skip` | Đã có file (khi dùng `-SkipExisting`) |
-| `error` | Lỗi (không có ảnh, hết quyền, MSSV sai, …) |
-| `summary` | Tổng kết cuối lượt chạy |
-
-Mã thoát: `0` nếu không có dòng lỗi; `1` nếu có ít nhất một `error`; `2` nếu thiếu `.env`/dữ liệu.
+Mã thoát: `0` không lỗi, `1` có ít nhất một dòng lỗi, `2` thiếu `.env` hoặc không có dòng hợp lệ.

@@ -16,7 +16,9 @@ $Root = $PSScriptRoot
 $VenvPython = Join-Path $Root ".venv\Scripts\python.exe"
 $Requirements = Join-Path $Root "requirements.txt"
 $Script = Join-Path $Root "resizer\resize.py"
+$EnvSample = Join-Path $Root "resizer\.env.sample"
 $EnvExample = Join-Path $Root "resizer\.env.example"
+$EnvTemplate = if (Test-Path $EnvSample) { $EnvSample } else { $EnvExample }
 $EnvFile = Join-Path $Root "resizer\.env"
 
 if (-not (Test-Path $VenvPython)) {
@@ -36,9 +38,9 @@ if ($LASTEXITCODE -ne 0) {
     }
 }
 
-if (-not (Test-Path $EnvFile) -and (Test-Path $EnvExample)) {
-    Copy-Item $EnvExample $EnvFile
-    Write-Host "Đã tạo resizer\.env từ .env.example — chỉnh MIN/MAX trước khi chạy."
+if (-not (Test-Path $EnvFile) -and (Test-Path $EnvTemplate)) {
+    Copy-Item $EnvTemplate $EnvFile
+    Write-Host "Đã tạo resizer\.env từ $(Split-Path $EnvTemplate -Leaf) — chỉnh MIN/MAX trước khi chạy."
 }
 
 $pyArgs = @($Script)

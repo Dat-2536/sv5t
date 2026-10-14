@@ -1,103 +1,45 @@
-# Phân phối minh chứng theo sinh viên
+# Gom minh chứng theo sinh viên
 
-## Mô tả
-
-Tool quét thư mục output của **renamer** (mặc định `renamer/output/`), đọc file đã đổi tên theo mẫu **`<mssv>_<loại>_<họ tên sinh viên>.<extension>`**, rồi copy hoặc di chuyển vào folder từng người:
+Đọc file đã đổi tên bởi [renamer](../renamer/README.md), mẫu `<mssv>_<loại>_<họ tên>.<đuôi>`, rồi copy vào:
 
 ```text
-distribute-files/output/<mssv>_<họ tên sinh viên>/<tên file giữ nguyên>
+distribute-files/output/<mssv>_<họ tên>/<tên file giữ nguyên>
 ```
 
-### Ví dụ
+Ví dụ `renamer/output/Giải thưởng/2210001_Giải thưởng_Nguyễn Văn A.png` thành `distribute-files/output/2210001_Nguyễn Văn A/2210001_Giải thưởng_Nguyễn Văn A.png`.
 
-| Nguồn (renamer) | Đích (distribute-files) |
-|-----------------|-------------------------|
-| `renamer/output/Giải thưởng/2352410_Giải thưởng_Trần Minh Huy.png` | `distribute-files/output/2352410_Trần Minh Huy/2352410_Giải thưởng_Trần Minh Huy.png` |
+Một sinh viên có nhiều loại minh chứng thì các file nằm chung một thư mục. File không bắt đầu bằng MSSV và không có họ tên ở đoạn cuối bị bỏ qua.
 
-Một sinh viên có thể có nhiều file (nhiều loại minh chứng) trong cùng folder `<mssv>_<họ tên>/`.
+## Chạy
 
-File không khớp mẫu tên (MSSV phải là dãy số ở đầu, họ tên ở segment cuối trước phần mở rộng) được **bỏ qua** và ghi log.
-
-## Cấu trúc thư mục
-
-```text
-distribute-files/
-  data.xlsx          ← danh sách SV (không bắt buộc cho tool)
-  output/            ← tạo khi chạy
-  distribute.py
-  distribute.log
-renamer/
-  output/
-    Giải thưởng/
-      2352410_Giải thưởng_Trần Minh Huy.png
-```
-
-Mặc định quét **mọi file** trong từng folder loại (kể cả thư mục lồng nhau). Dùng `--no-recursive` nếu chỉ muốn file nằm trực tiếp trong folder loại.
-
-## Chạy tool
-
-Ở **thư mục gốc repo**:
-
-```text
-.\distribute-files.ps1
-```
-
-Hoặc:
-
-```text
-.\.venv\Scripts\python.exe distribute-files\distribute.py
-```
-
-### Luồng gợi ý
-
-1. Chạy renamer: `.\renamer.ps1`
-2. Thử phân phối: `.\distribute-files.ps1 -DryRun`
-3. Chạy thật: `.\distribute-files.ps1`
-4. Dọn output cũ: `.\distribute-files.ps1 -CleanOutput`
-5. Nếu muốn dọn luôn bản trong renamer sau khi copy: thêm `-Move`
-
-## Tuỳ chọn (PowerShell)
+Sau khi renamer đã có output:
 
 ```text
 .\distribute-files.ps1 -DryRun
+.\distribute-files.ps1
 .\distribute-files.ps1 -Only "Giải thưởng","Ảnh thẻ"
-.\distribute-files.ps1 -Limit 10
-.\distribute-files.ps1 -SkipExisting
-.\distribute-files.ps1 -Move
-.\distribute-files.ps1 -NoRecursive
-.\distribute-files.ps1 -CleanOutput
-.\distribute-files.ps1 -Quiet
+.\distribute-files.ps1 -Move -CleanOutput
 .\distribute-files.ps1 -InputDir "D:\renamer\out" -OutputDir "D:\dist\out"
-.\distribute-files.ps1 -Log "D:\logs\distribute.log"
-.\distribute-files.ps1 -NoLog
 ```
 
 | Tham số | Python | Ý nghĩa |
 |---------|--------|---------|
-| `-InputDir` | `--input` | Nguồn (mặc định `renamer/output`) |
-| `-OutputDir` | `--output` | Đích (mặc định `distribute-files/output`) |
-| `-Only` | `--only` | Chỉ các folder loại khớp tên |
-| `-Limit N` | `--limit N` | Chỉ N file đầu |
-| `-DryRun` | `--dry-run` | Không ghi disk |
+| `-InputDir` | `--input` | Nguồn, mặc định `renamer/output` |
+| `-OutputDir` | `--output` | Đích, mặc định `distribute-files/output` |
+| `-Only` | `--only` | Chỉ các thư mục loại khớp tên |
+| `-Limit` | `--limit` | Chỉ N file đầu |
+| `-DryRun` | `--dry-run` | Không ghi đĩa |
 | `-Move` | `--move` | Di chuyển thay vì copy |
 | `-SkipExisting` | `--skip-existing` | Bỏ qua file đích đã có |
-| `-NoRecursive` | `--no-recursive` | Không quét folder lồng nhau |
-| `-CleanOutput` | `--clean-output` | Xóa sạch output trước khi chạy |
+| `-NoRecursive` | `--no-recursive` | Không quét thư mục con |
+| `-CleanOutput` | `--clean-output` | Xóa đích trước khi chạy |
 | `-Quiet` | `--quiet` | Không in từng dòng |
-| `-Log` / `-NoLog` | `--log` / `--no-log` | File log |
+| `-Log`, `-NoLog` | `--log`, `--no-log` | File log |
 
-Mặc định: **copy** (giữ nguyên `renamer/output`), **ghi đè** file trùng tên ở đích.
+Mặc định là copy và ghi đè file trùng tên. `data.xlsx` trong thư mục này không được tool đọc.
 
-## Log
+## Kết quả
 
-Mặc định: `distribute-files/distribute.log`
+Nhật ký `distribute.log` ghi `ok`, `dry-run`, `skip`, `error`, `summary`.
 
-| Status | Ý nghĩa |
-|--------|---------|
-| `ok` | Copy/di chuyển thành công |
-| `dry-run` | Mô phỏng |
-| `skip` | Tên không khớp hoặc đã có file (khi `-SkipExisting`) |
-| `error` | Lỗi OS |
-| `summary` | Tổng kết |
-
-Mã thoát: `0` thành công; `1` có lỗi; `2` không có file / thư mục nguồn không tồn tại.
+Mã thoát: `0` thành công, `1` có lỗi, `2` không có file hoặc thư mục nguồn không tồn tại.
