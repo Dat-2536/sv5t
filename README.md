@@ -44,12 +44,12 @@ Danh sách sinh viên, mật khẩu, ảnh và kết quả chạy ở lại trê
 
 ## Từng tool
 
-- [crawl-profile-image-mybk](crawl-profile-image-mybk/README.md) — tải ảnh thẻ myBk
-- [resizer](resizer/README.md) — chuẩn hoá dung lượng, xoá watermark, làm nét
-- [renamer](renamer/README.md) — đổi tên file minh chứng
-- [distribute-files](distribute-files/README.md) — gom file theo sinh viên
-- [pdf-converter](pdf-converter/README.md) — ảnh sang PDF
-- [highlighter](highlighter/README.md) — tô dòng trên PDF scan
-- [register-dhqg](register-dhqg/README.md) — đăng ký và ghi hồ sơ ĐHQG
-- [crawl-dhqg](crawl-dhqg/README.md) — cào hồ sơ ĐHQG ra Excel
-- [web-tools](web-tools/README.md) — bản chạy trên trình duyệt
+- [crawl-profile-image-mybk](crawl-profile-image-mybk/README.md) - tải ảnh thẻ myBk
+- [resizer](resizer/README.md) - chuẩn hoá dung lượng, xoá watermark, làm nét
+- [renamer](renamer/README.md) - đổi tên file minh chứng
+- [distribute-files](distribute-files/README.md) - gom file theo sinh viên
+- [pdf-converter](pdf-converter/README.md) - ảnh sang PDF
+- [highlighter](highlighter/README.md) - tô dòng trên PDF scan
+- [register-dhqg](register-dhqg/README.md) - đăng ký và ghi hồ sơ ĐHQG
+- [crawl-dhqg](crawl-dhqg/README.md) - cào hồ sơ ĐHQG ra Excel
+- [web-tools](web-tools/README.md) - bản chạy trên trình duyệt
