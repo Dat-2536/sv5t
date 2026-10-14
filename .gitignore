@@ -32,7 +32,10 @@ highlighter/.ocr_cache/
 **/input/**
 **/output/**
 
-# Hệ điều hành
+# Hệ điều hành và file tạm
 Thumbs.db
 Desktop.ini
 .DS_Store
+~$*
+*.tmp
+*.bak
